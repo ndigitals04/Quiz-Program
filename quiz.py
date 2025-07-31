@@ -1,12 +1,13 @@
 import sys
-import random, datetime, threading,time
+import random, datetime, threading,time,os
 
-
+exit_flag = threading.Event()
 base_questions = {"HTML": ["Hyper Text Markup Language", "Hype the Man Lark", "Hit That Mass Low", "Hustle Till Monday La"],
 "CSS":["Cascading Style Sheets", "Cis Stem Sisters", "Cross Site Scripting", "Color signs speaks"],
 "DIY": ["Do it yourself", "Don't Idolize Yam", "Drive In Yellow", "Dusk is Yours"]}
 
 questions = base_questions
+cached_answers =[""]
 
 def instructions():
     print("Welcome to this simple Quiz program. For best use please follow the following instructions:")
@@ -87,6 +88,7 @@ def renderSkippedQuestions(skipped_questions,quiz,answers):
                         print("Only Yes or No is allowed")
             else:
                 print("Your option is not a valid one. Try again")
+        cached_answers[0] = answers
     if skipped != []:
         skipped_questions = skipped
         print(skipped_questions)
@@ -103,16 +105,16 @@ def renderQuiz(quiz, start_time):
         for option_letter, option in quiz[i][1].items():
             print(f"{option_letter}. {option}")
         option = ""
-        duration = start_time + datetime.timedelta(minutes=1)
+        # duration = start_time + datetime.timedelta(minutes=1)
         while option != "close":
-            if datetime.datetime.now() > duration:
-                print("Your Time is up")
-                return answers
-            time_left = duration - datetime.datetime.now()
-            minutes,seconds = divmod(time_left.total_seconds(), 60)
-            minutes = int(minutes)
-            seconds = int(seconds)
-            print(f"Time left: {minutes}:{seconds}")
+            # if datetime.datetime.now() > duration:
+            #     print("Your Time is up")
+            #     return answers
+            # time_left = duration - datetime.datetime.now()
+            # minutes,seconds = divmod(time_left.total_seconds(), 60)
+            # minutes = int(minutes)
+            # seconds = int(seconds)
+            # print(f"Time left: {minutes}:{seconds}")
             option = input("\nType the letter of your chosen Option: ")
             if option.upper() == "A":
                 answer = quiz[i][1]["A"]
@@ -149,6 +151,7 @@ def renderQuiz(quiz, start_time):
                         print("Only Yes or No is allowed")
             else:
                 print("Your option is not a valid one. Try again")
+        cached_answers[0] = answers
     if skipped != []:
         answers = renderSkippedQuestions(skipped,quiz,answers)
     return answers
@@ -188,23 +191,29 @@ def startQuiz():
     instructions()
     start_permission=permissionToStartQuiz()
     if start_permission == "start":
-        start_time = datetime.datetime.now()
-
         quiz = prepareQuiz()
+        start_time = time.time()
+        # duration = start_time + datetime.timedelta(seconds=60)
+        timer = threading.Timer(20,timeup,args=[quiz])
+        timer.daemon = True
+        timer.start()
         answers = renderQuiz(quiz, start_time)
         if answers == "close":
             print("Great having you")
             sys.exit()
+        # while not exit_flag.is_set():
+        print("Not in exit flag")
         results = analyzeAnswers(answers,quiz)
         analytics = results[0]
         score = results[1] 
         print("Results: ")
         for correction in analytics:
-            print(f"{correction[0]}. {correction[1]}")
+            print(f"{correction[0]}. {correction[1]}")        
             print(correction[2])
             print(correction[3])
         no_of_questions = len(questions)
         print(f"\nYou scored {score}/{no_of_questions}")
+        
         
 def timer(start_time):
     duration = start_time + datetime.timedelta(minutes=2)
@@ -216,6 +225,22 @@ def timer(start_time):
             return "time up"
             break
 
+def timeup(quiz):
+    exit_flag.set()
+    print(cached_answers[0])
+    results = analyzeAnswers(cached_answers[0],quiz)
+    analytics = results[0]
+    score = results[1] 
+    print("Results: ")
+    for correction in analytics:
+        print(f"{correction[0]}. {correction[1]}")
+        print(correction[2])
+        print(correction[3])
+    no_of_questions = len(questions)
+    print(f"\nYou scored {score}/{no_of_questions}")
+    print("Thanks for testing the quiz program out")
+    os._exit(0)
+    
 
 startQuiz()
 
