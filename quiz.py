@@ -1,7 +1,7 @@
 import sys
 import random, datetime, threading,time,os
 
-exit_flag = threading.Event()
+# exit_flag = threading.Event()
 base_questions = {"HTML": ["Hyper Text Markup Language", "Hype the Man Lark", "Hit That Mass Low", "Hustle Till Monday La"],
 "CSS":["Cascading Style Sheets", "Cis Stem Sisters", "Cross Site Scripting", "Color signs speaks"],
 "DIY": ["Do it yourself", "Don't Idolize Yam", "Drive In Yellow", "Dusk is Yours"]}
@@ -34,7 +34,7 @@ def prepareQuiz():
     quiz = []
     
     for question,options in questions.items():
-        print(options)
+        # print(options)
         shuffled_options = options.copy()
         random.shuffle(shuffled_options)
         quiz_options = {"A":shuffled_options[0], "B":shuffled_options[1], "C":shuffled_options[2], "D":shuffled_options[3]}
@@ -44,7 +44,7 @@ def prepareQuiz():
     random.shuffle(quiz)
     return quiz
 
-def renderSkippedQuestions(skipped_questions,quiz,answers):
+def renderSkippedQuestions(skipped_questions,quiz,answers,start_time,duration):
     skipped = []
     for i in range(len(skipped_questions)):
         print(f"{skipped_questions[i][0]}. {skipped_questions[i][1]}")
@@ -52,6 +52,9 @@ def renderSkippedQuestions(skipped_questions,quiz,answers):
             print(f"{option_letter}. {option}")
         option = ""
         while option != "close":
+            time_left = time_checker(start_time,duration)
+            minutes,seconds = divmod(time_left, 60)
+            print(f"You have {minutes}m, {seconds:.0f}s left")
             option = input("\nType the letter of your chosen Option: ")
             if option.upper() == "A":
                 answer = quiz[skipped_questions[i][3]][1]["A"]
@@ -91,13 +94,11 @@ def renderSkippedQuestions(skipped_questions,quiz,answers):
         cached_answers[0] = answers
     if skipped != []:
         skipped_questions = skipped
-        print(skipped_questions)
-        print(skipped)
-        renderSkippedQuestions(skipped_questions,quiz,answers)
+        renderSkippedQuestions(skipped_questions,quiz,answers,start_time,duration)
     return answers
 
 
-def renderQuiz(quiz, start_time):
+def renderQuiz(quiz, start_time, duration):
     answers = []
     skipped =[]
     for i in range(len(quiz)):
@@ -107,6 +108,9 @@ def renderQuiz(quiz, start_time):
         option = ""
         # duration = start_time + datetime.timedelta(minutes=1)
         while option != "close":
+            time_left = time_checker(start_time,duration)
+            minutes,seconds = divmod(time_left, 60)
+            print(f"You have {minutes}m, {seconds:.0f}s left")
             # if datetime.datetime.now() > duration:
             #     print("Your Time is up")
             #     return answers
@@ -153,7 +157,7 @@ def renderQuiz(quiz, start_time):
                 print("Your option is not a valid one. Try again")
         cached_answers[0] = answers
     if skipped != []:
-        answers = renderSkippedQuestions(skipped,quiz,answers)
+        answers = renderSkippedQuestions(skipped,quiz,answers,start_time,duration)
     return answers
 
 def getKeyByValue(dictionary, target_value):
@@ -193,16 +197,15 @@ def startQuiz():
     if start_permission == "start":
         quiz = prepareQuiz()
         start_time = time.time()
-        # duration = start_time + datetime.timedelta(seconds=60)
-        timer = threading.Timer(20,timeup,args=[quiz])
+        duration = 20
+        timer = threading.Timer(duration,timeup,args=[quiz])
         timer.daemon = True
         timer.start()
-        answers = renderQuiz(quiz, start_time)
+        answers = renderQuiz(quiz, start_time, duration)
         if answers == "close":
             print("Great having you")
             sys.exit()
         # while not exit_flag.is_set():
-        print("Not in exit flag")
         results = analyzeAnswers(answers,quiz)
         analytics = results[0]
         score = results[1] 
@@ -226,12 +229,12 @@ def timer(start_time):
             break
 
 def timeup(quiz):
-    exit_flag.set()
-    print(cached_answers[0])
+    # exit_flag.set()
+    # print(cached_answers[0])
     results = analyzeAnswers(cached_answers[0],quiz)
     analytics = results[0]
     score = results[1] 
-    print("Results: ")
+    print("\nResults: ")
     for correction in analytics:
         print(f"{correction[0]}. {correction[1]}")
         print(correction[2])
@@ -241,6 +244,13 @@ def timeup(quiz):
     print("Thanks for testing the quiz program out")
     os._exit(0)
     
+def time_checker(start_time, duration):
+    elasped_time = time.time() - start_time
+    time_left = duration - elasped_time
+    time_left = max(0,time_left)
+    return time_left
+    
+
 
 startQuiz()
 
