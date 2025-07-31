@@ -2,9 +2,69 @@ import sys
 import random, datetime, threading,time,os
 
 # exit_flag = threading.Event()
-base_questions = {"HTML": ["Hyper Text Markup Language", "Hype the Man Lark", "Hit That Mass Low", "Hustle Till Monday La"],
-"CSS":["Cascading Style Sheets", "Cis Stem Sisters", "Cross Site Scripting", "Color signs speaks"],
-"DIY": ["Do it yourself", "Don't Idolize Yam", "Drive In Yellow", "Dusk is Yours"]}
+base_questions = {
+    "Who is Naruto's father?": [
+        "Minato Namikaze", "Jiraiya", "Kakashi Hatake", "Hiruzen Sarutobi"
+    ],
+    "What is the name of Naruto's signature jutsu?": [
+        "Rasengan", "Chidori", "Amaterasu", "Shadow Clone Explosion"
+    ],
+    "Which tailed beast is sealed inside Naruto?": [
+        "Kurama (Nine-Tails)", "Shukaku (One-Tail)", "Gyuki (Eight-Tails)", "Matatabi (Two-Tails)"
+    ],
+    "Who was the first Hokage?": [
+        "Hashirama Senju", "Tobirama Senju", "Hiruzen Sarutobi", "Minato Namikaze"
+    ],
+    "What clan does Sasuke belong to?": [
+        "Uchiha", "Hyuga", "Nara", "Akimichi"
+    ],
+    "Who killed Itachi Uchiha?": [
+        "Sasuke Uchiha", "Kakashi Hatake", "Naruto Uzumaki", "Madara Uchiha"
+    ],
+    "What is Kakashi's Sharingan eye origin?": [
+        "Gifted by Obito", "Inherited from his father", "Stolen from an Uchiha", "Awakened naturally"
+    ],
+    "What is the full name of Naruto’s mother?": [
+        "Kushina Uzumaki", "Kurenai Yuhi", "Mei Terumi", "Tsunade Senju"
+    ],
+    "What is the name of the organization that hunts tailed beasts?": [
+        "Akatsuki", "Anbu", "Root", "Orochimaru’s Lab"
+    ],
+    "What is the name of Sasuke’s older brother?": [
+        "Itachi", "Madara", "Obito", "Fugaku"
+    ],
+    "Who is known as the 'Copy Ninja'?": [
+        "Kakashi Hatake", "Might Guy", "Jiraiya", "Shikamaru Nara"
+    ],
+    "What was Naruto’s dream since childhood?": [
+        "To become Hokage", "To defeat Sasuke", "To master Sage Mode", "To join the Akatsuki"
+    ],
+    "Who trains Naruto in Sage Mode?": [
+        "Jiraiya", "Kakashi", "Ma & Pa", "Orochimaru"
+    ],
+    "What is the final evolution of Sasuke’s Sharingan?": [
+        "Rinnegan", "Mangekyō Sharingan", "Byakugan", "Eternal Mangekyō Sharingan"
+    ],
+    "Which village is Naruto from?": [
+        "Konohagakure", "Sunagakure", "Kirigakure", "Iwagakure"
+    ],
+    "Who is the Eight-Tails jinchuriki?": [
+        "Killer Bee", "Gaara", "Naruto", "Yugito Nii"
+    ],
+    "Which character is best in medical ninjutsu?": [
+        "Tsunade", "Ino", "Sakura", "Hinata"
+    ],
+    "What is the summoning animal of Jiraiya?": [
+        "Toad", "Snake", "Slug", "Falcon"
+    ],
+    "What power does the Byakugan grant?": [
+        "360-degree vision", "Fire manipulation", "Mind control", "Super strength"
+    ],
+    "What is the name of the final war in Naruto Shippuden?": [
+        "Fourth Great Ninja War", "Third Shinobi Conflict", "Uchiha Rebellion", "Battle of the Akatsuki"
+    ]
+}
+
 
 questions = base_questions
 cached_answers =[""]
@@ -189,7 +249,7 @@ def startQuiz():
     if start_permission == "start":
         quiz = prepareQuiz()
         start_time = time.time()
-        duration = 20
+        duration = 300
         timer = threading.Timer(duration,timeup,args=[quiz])
         timer.daemon = True
         timer.start()
