@@ -77,7 +77,7 @@ def renderSkippedQuestions(skipped_questions,quiz,answers,start_time,duration):
                 skip_index = skipped_questions[i][3]
                 skipped.append([skipped_questions[i][0],skipped_questions[i][1],skipped_questions[i][2],skip_index])
                 break
-            elif option.lower() == "close":
+            elif option.lower() == "close" or option.lower() == "submit":
                 permission_to_close= ""
                 while True:
                     print("Are you sure you want to close and submit this quiz?")
@@ -106,19 +106,10 @@ def renderQuiz(quiz, start_time, duration):
         for option_letter, option in quiz[i][1].items():
             print(f"{option_letter}. {option}")
         option = ""
-        # duration = start_time + datetime.timedelta(minutes=1)
         while option != "close":
             time_left = time_checker(start_time,duration)
             minutes,seconds = divmod(time_left, 60)
             print(f"You have {minutes}m, {seconds:.0f}s left")
-            # if datetime.datetime.now() > duration:
-            #     print("Your Time is up")
-            #     return answers
-            # time_left = duration - datetime.datetime.now()
-            # minutes,seconds = divmod(time_left.total_seconds(), 60)
-            # minutes = int(minutes)
-            # seconds = int(seconds)
-            # print(f"Time left: {minutes}:{seconds}")
             option = input("\nType the letter of your chosen Option: ")
             if option.upper() == "A":
                 answer = quiz[i][1]["A"]
@@ -141,13 +132,13 @@ def renderQuiz(quiz, start_time, duration):
                 skip_index = answers.index([quiz[i][0], "", ""])
                 skipped.append([i+1,quiz[i][0],quiz[i][1], skip_index])
                 break
-            elif option.lower() == "close":
+            elif option.lower() == "close" or option.lower() == "submit":
                 permission_to_close= ""
                 while True:
                     print("Are you sure you want to close and submit this quiz?")
                     permission_to_close = input("Type yes or no: ")
                     if permission_to_close == "yes":
-                        return "close"
+                        return ("close",answers)
                     elif permission_to_close == "no":
                         print("Alright continue the Quiz")
                         break
@@ -170,6 +161,7 @@ def analyzeAnswers(answers,quiz):
     analytics = []
     score = 0
     for i in range(len(answers)):
+        # print(answers)
         correct_answer = base_questions[answers[i][0]][0]
         correct_answer_option = getKeyByValue(quiz[i][1],correct_answer)
         if correct_answer == answers[i][1]:
@@ -202,32 +194,33 @@ def startQuiz():
         timer.daemon = True
         timer.start()
         answers = renderQuiz(quiz, start_time, duration)
-        if answers == "close":
+        if type(answers) == tuple:
+            results = analyzeAnswers(answers[1],quiz)
+            analytics = results[0]
+            score = results[1] 
+            print("Results: ")
+            for correction in analytics:
+                print(f"{correction[0]}. {correction[1]}")        
+                print(correction[2])
+                print(correction[3])
+            no_of_questions = len(questions)
+            print(f"\nYou scored {score}/{no_of_questions}")
             print("Great having you")
             sys.exit()
-        # while not exit_flag.is_set():
-        results = analyzeAnswers(answers,quiz)
-        analytics = results[0]
-        score = results[1] 
-        print("Results: ")
-        for correction in analytics:
-            print(f"{correction[0]}. {correction[1]}")        
-            print(correction[2])
-            print(correction[3])
-        no_of_questions = len(questions)
-        print(f"\nYou scored {score}/{no_of_questions}")
-        
-        
-def timer(start_time):
-    duration = start_time + datetime.timedelta(minutes=2)
-    while True:
-        if datetime.datetime.now() < duration:
-            time.sleep(1)
         else:
-            print("Your time is up")
-            return "time up"
-            break
-
+            # while not exit_flag.is_set():
+            results = analyzeAnswers(answers,quiz)
+            analytics = results[0]
+            score = results[1] 
+            print("Results: ")
+            for correction in analytics:
+                print(f"{correction[0]}. {correction[1]}")        
+                print(correction[2])
+                print(correction[3])
+            no_of_questions = len(questions)
+            print(f"\nYou scored {score}/{no_of_questions}")
+        
+    
 def timeup(quiz):
     # exit_flag.set()
     # print(cached_answers[0])
