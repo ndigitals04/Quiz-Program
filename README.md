@@ -8,12 +8,12 @@ A simple terminal-based Python quiz application that tests your knowledge on Nar
 
 ## 📋 Features
 
-- Multiple-choice quiz with 4 options per question
-- Tracks score and number of correct answers
+- Multiple-choice quiz with 4 options per question.
+- Tracks score and number of correct answers.
 - Displays Time left.
 - Automatically closes and submits once time is over
-- User can skip questions using `skip` command
-- Clean and readable CLI interface
+- User can skip questions using `skip` command.
+- Clean and readable CLI interface.
 
 ---
 
@@ -45,8 +45,8 @@ python quiz.py
 
 - After completing the quiz, the user is shown their total score and the program ends.
 
-## ▶️ Watch Demo
-[![Watch Demo](./quiz_app.png)](https://www.loom.com/share/ae501423b3454b6792b3f4391570c5b2?sid=861c06e0-931a-42a0-badf-d02786cbcd39)
+## ▶️ Watch Live Demonstration here👇
+[![Watch Demo](./Quiz_program_thumbnail.png)](https://youtu.be/sVWlrglavIU)
 
 ## 📞 Contact
 
